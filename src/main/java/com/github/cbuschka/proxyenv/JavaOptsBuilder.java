@@ -1,22 +1,57 @@
 package com.github.cbuschka.proxyenv;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaOptsBuilder
 {
-	private StringBuilder buf = new StringBuilder();
+	public static class JavaOpt
+	{
+		private String name;
+		private String value;
+
+		private JavaOpt(String name, String value)
+		{
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public String getValue()
+		{
+			return value;
+		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			JavaOpt javaOpt = (JavaOpt) o;
+
+			if (!name.equals(javaOpt.name)) return false;
+			return value.equals(javaOpt.value);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			int result = name.hashCode();
+			result = 31 * result + value.hashCode();
+			return result;
+		}
+	}
+
+	private List<JavaOpt> javaOpts = new ArrayList<>();
 
 	public JavaOptsBuilder()
 	{
-	}
-
-	public JavaOptsBuilder(ProxyConfig proxyConfig)
-	{
-		withHttpProxyHost(proxyConfig.getHttpProxyHost());
-		withHttpsProxyHost(proxyConfig.getHttpsProxyHost());
-		withHttpNonProxyHosts(proxyConfig.getHttpNonProxyHosts());
-		withFtpProxyHost(proxyConfig.getFtpProxyHost());
-		withFtpNonProxyHosts(proxyConfig.getFtpNonProxyHosts());
 	}
 
 	public JavaOptsBuilder withHttpProxyHost(HostWithPort httpProxyHost)
@@ -54,8 +89,8 @@ public class JavaOptsBuilder
 
 	private void appendAsSystemProperties(String hostPropName, String portPropName, HostWithPort hostWithPort)
 	{
-		appendSystemProperty(hostPropName, hostWithPort.getHostName());
-		appendSystemProperty(portPropName, String.valueOf(hostWithPort.getPort()));
+		this.javaOpts.add(new JavaOpt(hostPropName, hostWithPort.getHostName()));
+		this.javaOpts.add(new JavaOpt(portPropName, String.valueOf(hostWithPort.getPort())));
 	}
 
 	public JavaOptsBuilder withHttpNonProxyHosts(List<NonProxyHost> nonProxyHosts)
@@ -109,16 +144,35 @@ public class JavaOptsBuilder
 
 	private void appendSystemProperty(String propName, String propValue)
 	{
-		if (buf.length() > 0)
-		{
-			buf.append(" ");
-		}
-
-		buf.append("-D").append(propName).append("=").append(propValue);
+		this.javaOpts.add(new JavaOpt(propName, propValue));
 	}
 
-	public String build()
+	public List<JavaOpt> getJavaOpts()
 	{
-		return this.buf.toString();
+		return Collections.unmodifiableList(new ArrayList<>(this.javaOpts));
+	}
+
+	public String buildString()
+	{
+		StringBuilder buf = new StringBuilder();
+		for (JavaOpt opt : javaOpts)
+		{
+			if (buf.length() > 0)
+			{
+				buf.append(" ");
+			}
+			buf.append("-D").append(opt.getName()).append("=").append(opt.getValue());
+		}
+
+		return buf.toString();
+	}
+
+	public JavaOptsBuilder withProxyConfig(ProxyConfig proxyConfig)
+	{
+		return withHttpProxyHost(proxyConfig.getHttpProxyHost())
+				.withHttpsProxyHost(proxyConfig.getHttpsProxyHost())
+				.withHttpNonProxyHosts(proxyConfig.getHttpNonProxyHosts())
+				.withFtpProxyHost(proxyConfig.getFtpProxyHost())
+				.withFtpNonProxyHosts(proxyConfig.getFtpNonProxyHosts());
 	}
 }

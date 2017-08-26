@@ -21,9 +21,15 @@ public class OsDetector
 		this.sysPropsAccessor = sysPropsAccessor;
 	}
 
+	public boolean isWindows()
+	{
+		String osName = getOsName();
+		return osName.contains("windows");
+	}
+
 	public boolean isUnixoid()
 	{
-		String osName = this.sysPropsAccessor.apply("os.name").toLowerCase();
+		String osName = getOsName();
 		for (Pattern pattern : unixoidPatterns)
 		{
 			if (pattern.matcher(osName).matches())
@@ -33,5 +39,10 @@ public class OsDetector
 		}
 
 		return false;
+	}
+
+	private String getOsName()
+	{
+		return this.sysPropsAccessor.apply("os.name").toLowerCase();
 	}
 }

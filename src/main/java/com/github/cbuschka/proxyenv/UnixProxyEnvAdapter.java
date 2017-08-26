@@ -5,20 +5,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class UnixProxyEnvAdapter implements EnvAdapter
+public class UnixProxyEnvAdapter extends AbstractEnvVarProxyEnvAdapter implements EnvAdapter
 {
 	private OsDetector osDetector = new OsDetector();
-	private Function<String, String> envAccessor;
-	private HostWithPortParser hostWithPortParser = new HostWithPortParser();
 
 	public UnixProxyEnvAdapter()
 	{
-		this((e) -> System.getenv(e));
+		super();
 	}
 
 	public UnixProxyEnvAdapter(Function<String, String> envAccessor)
 	{
-		this.envAccessor = envAccessor;
+		super(envAccessor);
 	}
 
 	@Override
@@ -54,30 +52,6 @@ public class UnixProxyEnvAdapter implements EnvAdapter
 
 	public List<NonProxyHost> getNonProxyHosts()
 	{
-		String nonProxyHostsValue = this.envAccessor.apply("no_proxy");
-		if (nonProxyHostsValue == null || nonProxyHostsValue.trim().isEmpty())
-		{
-			return Collections.emptyList();
-		}
-
-		List<NonProxyHost> nonProxyHosts = new ArrayList<>();
-		String[] parts = nonProxyHostsValue.split(",");
-		for (String part : parts)
-		{
-			nonProxyHosts.add(new NonProxyHost(part));
-		}
-
-		return nonProxyHosts;
-	}
-
-	private HostWithPort getHostWithPort(String envVarName, int defaultPort)
-	{
-		String value = this.envAccessor.apply(envVarName);
-		if (value == null)
-		{
-			return null;
-		}
-
-		return hostWithPortParser.parse(value, defaultPort);
+		return super.getNonProxyHosts();
 	}
 }

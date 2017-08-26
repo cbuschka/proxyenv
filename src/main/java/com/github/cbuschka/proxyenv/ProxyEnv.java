@@ -11,11 +11,10 @@ public class ProxyEnv
 	{
 	}
 
-	public String toJavaOpts()
+	public ProxyConfig getProxyConfig()
 	{
 		EnvAdapter envAdapter = getEnvAdapter();
-		ProxyConfig model = envAdapter.extract();
-		return new JavaOptsBuilder(model).build();
+		return envAdapter.extract();
 	}
 
 	private EnvAdapter getEnvAdapter()

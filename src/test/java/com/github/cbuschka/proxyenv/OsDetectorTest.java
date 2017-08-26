@@ -21,44 +21,49 @@ public class OsDetectorTest
 	private String osName;
 
 	@Test
-	public void macOSXIsUnixoid() throws Exception
+	public void shouldDetectMaxOSX() throws Exception
 	{
 		givenOsName("Mac OS X");
 
 		assertThat(osDetector.isUnixoid(), is(true));
+		assertThat(osDetector.isWindows(), is(false));
 	}
 
 	@Test
-	public void sunOsIsUnixoid() throws Exception
+	public void shouldDetectSunOS() throws Exception
 	{
 		givenOsName("SunOS");
 
 		assertThat(osDetector.isUnixoid(), is(true));
+		assertThat(osDetector.isWindows(), is(false));
 	}
 
 
 	@Test
-	public void freeBsdIsUnixoid() throws Exception
+	public void shouldDetectFreeBSD() throws Exception
 	{
 		givenOsName("FreeBSD");
 
 		assertThat(osDetector.isUnixoid(), is(true));
+		assertThat(osDetector.isWindows(), is(false));
 	}
 
 	@Test
-	public void linuxIsUnixoid() throws Exception
+	public void shouldDetectLinux() throws Exception
 	{
 		givenOsName("Linux");
 
 		assertThat(osDetector.isUnixoid(), is(true));
+		assertThat(osDetector.isWindows(), is(false));
 	}
 
 	@Test
-	public void windowsIsNotUnixoid() throws Exception
+	public void shouldDetectWindows() throws Exception
 	{
-		givenOsName("Windows");
+		givenOsName("Windows 2000");
 
 		assertThat(osDetector.isUnixoid(), is(false));
+		assertThat(osDetector.isWindows(), is(true));
 	}
 
 	private void givenOsName(String osName)

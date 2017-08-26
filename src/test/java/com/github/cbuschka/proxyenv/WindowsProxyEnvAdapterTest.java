@@ -15,10 +15,10 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UnixProxyEnvAdapterTest
+public class WindowsProxyEnvAdapterTest
 {
 	@InjectMocks
-	private UnixProxyEnvAdapter envAdapter = new UnixProxyEnvAdapter();
+	private WindowsProxyEnvAdapter envAdapter = new WindowsProxyEnvAdapter();
 
 	@Mock
 	private Function<String, String> envAccessor;
@@ -29,15 +29,17 @@ public class UnixProxyEnvAdapterTest
 	private ProxyConfig proxyConfig;
 
 	@Test
-	public void handlesUnixoid() {
-		when(osDetector.isUnixoid()).thenReturn(true);
+	public void handlesWindows()
+	{
+		when(osDetector.isWindows()).thenReturn(true);
 
 		assertThat(this.envAdapter.handles(), is(true));
 	}
 
 	@Test
-	public void doesntHandleNonUnixoid() {
-		when(osDetector.isUnixoid()).thenReturn(false);
+	public void doesntHandleNonWindows()
+	{
+		when(osDetector.isWindows()).thenReturn(false);
 
 		assertThat(this.envAdapter.handles(), is(false));
 	}
@@ -67,7 +69,6 @@ public class UnixProxyEnvAdapterTest
 		thenNoHttpsProxySet();
 		thenNoFtpSettings();
 	}
-
 
 	@Test
 	public void httpProxyHostnameOnly()

@@ -8,8 +8,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +38,13 @@ public class ProxyEnvTest
 	@Test
 	public void noProxySettings() throws Exception
 	{
-		String javaOpts = proxyEnv.toJavaOpts();
+		ProxyConfig proxyConfig = proxyEnv.getProxyConfig();
 
-		assertThat(javaOpts, is(""));
+		assertThat(proxyConfig.getHttpProxyHost(), is(nullValue()));
+		assertThat(proxyConfig.getHttpNonProxyHosts(), is(Collections.emptyList()));
+		assertThat(proxyConfig.getHttpsProxyHost(), is(nullValue()));
+		assertThat(proxyConfig.getFtpProxyHost(), is(nullValue()));
+		assertThat(proxyConfig.getFtpNonProxyHosts(), is(Collections.emptyList()));
 	}
 
 }
