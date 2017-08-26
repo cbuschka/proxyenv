@@ -1,6 +1,14 @@
-# proxyenv - A java tool to work with proxy env configs.
+# proxyenv - A java tool to work with proxy env configs. [![Build Status](https://travis-ci.org/cbuschka/proxyenv.svg?branch=master)](https://travis-ci.org/cbuschka/proxyenv)
 
-#### Still Work in Progress!
+### Get the current proxy config
+```
+ProyConfig proxyConfig = ProxyEnv.getProxyConfig();
+```
+
+### Convert proxy config to java opts
+```
+String javaOpts = new JavaOptsBuilder().withProxyConfig(proxyConfig).buildString();
+```
 
 ## Author
 Written by [Cornelius Buschka](https://github.com/cbuschka).
