@@ -10,6 +10,12 @@ public class NonProxyHost
 
 	private String value;
 
+
+	public static Object valueOf(String value)
+	{
+		return new NonProxyHost(value);
+	}
+
 	public NonProxyHost(String value)
 	{
 		this.value = value.trim();
