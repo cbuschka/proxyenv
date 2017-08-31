@@ -1,12 +1,11 @@
 package com.github.cbuschka.proxyenv;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class JavaOptsBuilder
 {
-	public static class JavaOpt
+	private static class JavaOpt
 	{
 		private String name;
 		private String value;
@@ -145,11 +144,6 @@ public class JavaOptsBuilder
 	private void appendSystemProperty(String propName, String propValue)
 	{
 		this.javaOpts.add(new JavaOpt(propName, propValue));
-	}
-
-	public List<JavaOpt> getJavaOpts()
-	{
-		return Collections.unmodifiableList(new ArrayList<>(this.javaOpts));
 	}
 
 	public String buildString()

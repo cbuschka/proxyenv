@@ -23,24 +23,7 @@ public class UnixProxyEnvAdapterTest
 	@Mock
 	private Function<String, String> envAccessor;
 
-	@Mock
-	private OsDetector osDetector;
-
 	private ProxyConfig proxyConfig;
-
-	@Test
-	public void handlesUnixoid() {
-		when(osDetector.isUnixoid()).thenReturn(true);
-
-		assertThat(this.envAdapter.handles(), is(true));
-	}
-
-	@Test
-	public void doesntHandleNonUnixoid() {
-		when(osDetector.isUnixoid()).thenReturn(false);
-
-		assertThat(this.envAdapter.handles(), is(false));
-	}
 
 	@Test
 	public void httpProxyWithPort()

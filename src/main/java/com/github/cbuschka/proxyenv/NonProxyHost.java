@@ -12,7 +12,6 @@ public class NonProxyHost
 
 	private String value;
 
-
 	public static NonProxyHost valueOf(String value)
 	{
 		return new NonProxyHost(value);
@@ -29,7 +28,7 @@ public class NonProxyHost
 		return this.value.hashCode();
 	}
 
-	public boolean isLocalhost()
+	/* package */ boolean isLocalhost()
 	{
 		for (Pattern p : LOCALHOST_VALUES)
 		{
@@ -65,7 +64,7 @@ public class NonProxyHost
 		return getClass().getSimpleName() + "{value=" + this.value + "}";
 	}
 
-	public boolean isIp()
+	/* package */ boolean isIp()
 	{
 		return IP4_ADDRESS_PATTERN.matcher(this.value).matches();
 	}

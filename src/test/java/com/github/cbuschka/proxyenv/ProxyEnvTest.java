@@ -20,13 +20,7 @@ public class ProxyEnvTest
 	private ProxyEnv proxyEnv;
 
 	@Mock
-	private EnvAdapter envAdapter0;
-
-	@Mock
-	private EnvAdapter envAdapter1;
-
-	@Mock
-	private EnvAdapter envAdapter2;
+	private UnixProxyEnvAdapter envAdapter1;
 
 	@Mock
 	private ProxyConfig proxyConfig;
@@ -34,10 +28,7 @@ public class ProxyEnvTest
 	@Before
 	public void setUp()
 	{
-		proxyEnv.envAdapters = Arrays.asList(envAdapter0, envAdapter1, envAdapter2);
-		when(envAdapter0.handles()).thenReturn(false);
-		when(envAdapter1.handles()).thenReturn(true);
-		when(envAdapter2.handles()).thenReturn(true);
+		proxyEnv.envAdapter = envAdapter1;
 		when(envAdapter1.extract()).thenReturn(proxyConfig);
 	}
 
@@ -48,5 +39,4 @@ public class ProxyEnvTest
 
 		assertThat(result, is(this.proxyConfig));
 	}
-
 }

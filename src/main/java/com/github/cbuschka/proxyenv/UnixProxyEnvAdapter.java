@@ -1,57 +1,66 @@
 package com.github.cbuschka.proxyenv;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class UnixProxyEnvAdapter extends AbstractEnvVarProxyEnvAdapter implements EnvAdapter
+public class UnixProxyEnvAdapter
 {
-	private OsDetector osDetector = new OsDetector();
+	private Function<String, String> envAccessor;
 
-	public UnixProxyEnvAdapter()
+	private UnixNonProxyHostsParser nonProxyHostsParser = new UnixNonProxyHostsParser();
+
+	private HostWithPortParser hostWithPortParser = new HostWithPortParser();
+
+	protected UnixProxyEnvAdapter()
 	{
-		super();
+		this((e) -> System.getenv(e));
 	}
 
-	public UnixProxyEnvAdapter(Function<String, String> envAccessor)
+	protected UnixProxyEnvAdapter(Function<String, String> envAccessor)
 	{
-		super(envAccessor);
-	}
-
-	@Override
-	public boolean handles()
-	{
-		return osDetector.isUnixoid();
+		this.envAccessor = envAccessor;
 	}
 
 	public ProxyConfig extract()
 	{
-		HostWithPort httpProxyHost = getHttpProxy();
-		HostWithPort httpsProxyHost = getHttpsProxy();
-		HostWithPort ftpProxyHost = getFtpProxy();
+		ProxyConfig proxyConfig = new ProxyConfig();
 		List<NonProxyHost> nonProxyHosts = getNonProxyHosts();
-
-		return new ProxyConfig(httpProxyHost, httpsProxyHost, nonProxyHosts, ftpProxyHost, nonProxyHosts);
+		proxyConfig.setHttpProxyHost(getHostWithPort("http_proxy", 80));
+		proxyConfig.setHttpNonProxyHosts(nonProxyHosts);
+		if (proxyConfig.getHttpProxyHost() != null)
+		{
+			proxyConfig.setHttpNonProxyHosts(nonProxyHosts);
+		}
+		proxyConfig.setHttpsProxyHost(getHostWithPort("https_proxy", 443));
+		proxyConfig.setFtpProxyHost(getHostWithPort("ftp_proxy", 443));
+		if (proxyConfig.getFtpProxyHost() != null)
+		{
+			proxyConfig.setFtpNonProxyHosts(nonProxyHosts);
+		}
+		return proxyConfig;
 	}
 
-	public HostWithPort getHttpProxy()
+	protected HostWithPort getHostWithPort(String envVarName, int defaultPort)
 	{
-		return getHostWithPort("http_proxy", 80);
-	}
+		String value = this.envAccessor.apply(envVarName);
+		if (value == null)
+		{
+			return null;
+		}
 
-	public HostWithPort getHttpsProxy()
-	{
-		return getHostWithPort("https_proxy", 443);
-	}
-
-	public HostWithPort getFtpProxy()
-	{
-		return getHostWithPort("ftp_proxy", 80);
+		return hostWithPortParser.parse(value, defaultPort);
 	}
 
 	public List<NonProxyHost> getNonProxyHosts()
 	{
-		return super.getNonProxyHosts();
+		String nonProxyHostsValue = this.envAccessor.apply("no_proxy");
+		if (nonProxyHostsValue == null || nonProxyHostsValue.trim().isEmpty())
+		{
+			return Collections.emptyList();
+		}
+
+		return nonProxyHostsParser.parse(nonProxyHostsValue);
 	}
+
 }
