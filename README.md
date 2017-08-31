@@ -2,7 +2,7 @@
 
 ### Get the current proxy config
 ```
-ProyConfig proxyConfig = ProxyEnv.getProxyConfig();
+ProyConfig proxyConfig = new ProxyEnv().getProxyConfig();
 ```
 
 ### Convert proxy config to java opts
