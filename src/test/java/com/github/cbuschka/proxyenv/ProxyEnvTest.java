@@ -8,11 +8,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -22,29 +20,33 @@ public class ProxyEnvTest
 	private ProxyEnv proxyEnv;
 
 	@Mock
-	private EnvAdapter envAdapter;
+	private EnvAdapter envAdapter0;
 
 	@Mock
-	private ProxyConfig proxyEnvModel;
+	private EnvAdapter envAdapter1;
+
+	@Mock
+	private EnvAdapter envAdapter2;
+
+	@Mock
+	private ProxyConfig proxyConfig;
 
 	@Before
 	public void setUp()
 	{
-		proxyEnv.envAdapters = Arrays.asList(envAdapter);
-		when(envAdapter.handles()).thenReturn(true);
-		when(envAdapter.extract()).thenReturn(proxyEnvModel);
+		proxyEnv.envAdapters = Arrays.asList(envAdapter0, envAdapter1, envAdapter2);
+		when(envAdapter0.handles()).thenReturn(false);
+		when(envAdapter1.handles()).thenReturn(true);
+		when(envAdapter2.handles()).thenReturn(true);
+		when(envAdapter1.extract()).thenReturn(proxyConfig);
 	}
 
 	@Test
-	public void noProxySettings() throws Exception
+	public void asksHandlingEnvAdapter() throws Exception
 	{
-		ProxyConfig proxyConfig = proxyEnv.getProxyConfig();
+		ProxyConfig result = proxyEnv.getProxyConfig();
 
-		assertThat(proxyConfig.getHttpProxyHost(), is(nullValue()));
-		assertThat(proxyConfig.getHttpNonProxyHosts(), is(Collections.emptyList()));
-		assertThat(proxyConfig.getHttpsProxyHost(), is(nullValue()));
-		assertThat(proxyConfig.getFtpProxyHost(), is(nullValue()));
-		assertThat(proxyConfig.getFtpNonProxyHosts(), is(Collections.emptyList()));
+		assertThat(result, is(this.proxyConfig));
 	}
 
 }
