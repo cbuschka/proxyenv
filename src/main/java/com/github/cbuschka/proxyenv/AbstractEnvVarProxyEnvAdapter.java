@@ -1,6 +1,5 @@
 package com.github.cbuschka.proxyenv;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -9,6 +8,7 @@ public abstract class AbstractEnvVarProxyEnvAdapter implements EnvAdapter
 {
 	protected Function<String, String> envAccessor;
 	protected HostWithPortParser hostWithPortParser = new HostWithPortParser();
+	protected UnixNonProxyHostsParser nonProxyHostsParser = new UnixNonProxyHostsParser();
 
 	protected AbstractEnvVarProxyEnvAdapter()
 	{
@@ -44,14 +44,7 @@ public abstract class AbstractEnvVarProxyEnvAdapter implements EnvAdapter
 			return Collections.emptyList();
 		}
 
-		List<NonProxyHost> nonProxyHosts = new ArrayList<>();
-		String[] parts = nonProxyHostsValue.split(",");
-		for (String part : parts)
-		{
-			nonProxyHosts.add(new NonProxyHost(part));
-		}
-
-		return nonProxyHosts;
+		return nonProxyHostsParser.parse(nonProxyHostsValue);
 	}
 
 }

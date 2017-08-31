@@ -6,12 +6,14 @@ import java.util.regex.Pattern;
 
 public class NonProxyHost
 {
+	private static final Pattern IP4_ADDRESS_PATTERN = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+
 	private static final List<Pattern> LOCALHOST_VALUES = Arrays.asList(Pattern.compile("^localhost$"), Pattern.compile("^127\\..*$"), Pattern.compile("^\\:\\:1$"));
 
 	private String value;
 
 
-	public static Object valueOf(String value)
+	public static NonProxyHost valueOf(String value)
 	{
 		return new NonProxyHost(value);
 	}
@@ -61,6 +63,11 @@ public class NonProxyHost
 	public String toString()
 	{
 		return getClass().getSimpleName() + "{value=" + this.value + "}";
+	}
+
+	public boolean isIp()
+	{
+		return IP4_ADDRESS_PATTERN.matcher(this.value).matches();
 	}
 }
 
